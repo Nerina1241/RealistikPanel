@@ -1,23 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
 <h2 class="section-title">Beatmap Ranking</h2>
-<p class="section-lead">Change the ranking of a beatmap! This can be ranked, loved or qualified.</p>
+<p class="section-lead">
+    Change the rank status of the beatmapset! This can be ranked, loved or unranked.
+</p>
 <div class="card">
-    <div class="card-header">
-        <h4>Rank a beatmap!</h4>
+    <div class="card-header" style="display: flex; flex-direction: row">
+        <h4 style="width: 45%">By beatmapset id!</h4>
+        <div style="width: 10%"></div>
+        <h4 style="width: 45%">By beatmap id!</h4>
     </div>
-    <div class="card-body">
-        <form action="/rank" method="post">
+    <div class="card-body" style="display: flex; flex-direction: row">
+        <form action="/rank" method="post" style="width: 45%">
             <div class="form-group">
-                Make sure all the difficulties have been loaded at least once so they are added to the database!<br>
-                <label>Beatmap ID</label>
-                <input type="text" class="form-control" name="bmapid">
+                Please enter the <b>Beatmapset ID</b>.<br><br>
+                You should ensure all difficulties are loaded on client once at least.<br>
+                If you do not, search result may have some difficulties missing.<br><br>
+                <label>Beatmapset ID</label>
+                <input type="text" id="mapsetID" class="form-control" name="mapsetID">
             </div>
+            <input type="hidden" name="isBeatmapSet" value="1">
+            <button class="btn btn-primary mr-1" type="submit" name="">Search</button>
+        </form>
+        <div style="width: 10%"></div>
+        <form action="/rank" method="post" style="width: 45%">
+            <div class="form-group">
+                Please enter the <b>Beatmap ID</b>.<br><br>
+                Panel will search for the beatmapset id which has the beatmap you request.<br>
+                For colmplete search result, you should ensure all difficulties are loaded.<br><br>
+                <label>Beatmap ID</label>
+                <input type="text" id="mapID" class="form-control" name="mapID">
+            </div>
+            <input type="hidden" name="isBeatmapSet" value="0">
             <button class="btn btn-primary mr-1" type="submit" name="">Search</button>
         </form>
     </div>
     <div class="card-footer">
-        RealistikPanel!
+        DebianPanel!
     </div>
 </div>
 {% endblock %}

@@ -7,93 +7,151 @@
     </div>
     <div class="card-body">
         <div class="buttons">
-            <a href="{{ config['BeatmapMirror'] }}d/{{ beatdata[0]['BeatmapsetId'] }}" class="btn btn-success">Download</a>
+            <a href="{{ config['BeatmapMirror'] }}d/{{ beatdata[0]['BeatmapsetId'] }}"
+               class="btn btn-success">Download</a>
             <a onclick="Play()" class="btn btn-primary" style="color: white;">Play</a>
             <a onclick="Pause()" class="btn btn-primary" style="color: white;">Pause</a>
             <audio id="BeatmapAudio">
                 <source src="https://b.ppy.sh/preview/{{ beatdata[0]['BeatmapsetId'] }}.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
+                Your browser does not support the audio element.
             </audio>
         </div>
         <div class="buttons">
-            <a href="/action/rankset/{{ beatdata[0]['BeatmapsetId'] }}" class="btn btn-success">Rank All</a>
-            <a href="/action/loveset/{{ beatdata[0]['BeatmapsetId'] }}" class="btn" style="background-color: #fc4b98; box-shadow: 0 2px 6px #f798c1; border-color: #ff66a8; color: white;">Love All</a>
-            <a href="/action/unrankset/{{ beatdata[0]['BeatmapsetId'] }}" class="btn btn-secondary">Unrank All</a>
+            <button onclick="updateAllSelection('Ranked')" class="btn btn-success">Rank All</button>
+            <button onclick="updateAllSelection('Loved')" class="btn"
+                    style="background-color: #fc4b98; box-shadow: 0 2px 6px #f798c1; border-color: #ff66a8; color: white;">
+                Love
+                All
+            </button>
+            <button onclick="updateAllSelection('Unranked')" class="btn btn-secondary">Unrank All</button>
         </div>
     </div>
     <div class="card-footer">
-        RealistikPanel
+        DebianPanel
     </div>
 </div>
-{% for beatmap in beatdata %}
 <article class="article">
     <div class="article-header">
-        <div class="article-image" data-background="{{ beatmap['Cover'] }}" style="background-image: url(&quot;{{ beatmap['Cover'] }}&quot;);">
+        <div class="article-image" data-background="{{ beatdata[0]['Cover'] }}"
+             style="background-image: url(&quot;{{ beatdata[0]['Cover'] }}&quot;);">
         </div>
         <div class="article-title">
-            <h2><a href="{{ config['ServerURL'] }}b/{{ beatmap['BeatmapId'] }}">{{ beatmap["SongName"] }} {{ beatmap["Difficulty"] }}☆</a></h2>
+            <h2 style="font-size: 36px; line-height: 36px ;text-shadow: 4px 4px 6px black"><a>
+                {{ beatdata[0]['SongName'] }}
+            </a></h2>
         </div>
     </div>
     <div class="article-details">
-        <p>Change the ranking status for this song!</p>
+        <p>Change the rank status for this song!</p>
         <form action="/rank/{{ Id }}" method="post">
-            <label>Beatmap ID</label>
-            <input type="text" class="form-control" value="{{ beatmap['BeatmapId'] }}" name='bmapid-{{ beatmap["BmapNumber"] }}' readonly="readonly">
-            <label>Status</label>
-            <select class="form-control" name='rankstatus-{{ beatmap["BmapNumber"] }}'>
-                {% if beatmap["Ranked"] == 0 %}
-                    <option selected>Unranked</option>
-                {% else %}
-                    <option>Unranked</option>
-                {% endif %}
-                {% if beatmap["Ranked"] == 5 %}
-                    <option selected>Loved</option>
-                {% else %}
-                    <option>Loved</option>
-                {% endif %}
-                {% if beatmap["Ranked"] == 2 %}
-                    <option selected>Ranked</option>
-                {% else %}
-                    <option>Ranked</option>
-                {% endif %}
-            </select>
-            <input type="hidden" name="beatmapnumber" value='{{ beatmap["BmapNumber"] }}'>
-            <p></p> <!--Seperator-->
-            <div id="pp-{{ beatmap['BmapNumber'] }}">
-                <a onclick="CalcPP({{ beatmap['BmapNumber'] }}, '{{ beatmap['BeatmapId'] }}')" class="btn btn-primary" style="color: white;">Calculate PP</a>
+            {% for beatmap in beatdata %}
+            <div style="display: flex; flex-direction: row; justify-content: center; width: 100%">
+                <div style="display: flex; flex-direction: column; justify-content: center; width: 3%">
+                    <label>Mode</label>
+                    {% if beatmap["Mode"] == 0 %}
+                    <img src='https://debian.moe/static/files/std.png' style="height: 35px; width: 35px" alt="std">
+                    {% endif %}
+                    {% if beatmap["Mode"] == 1 %}
+                    <img src='https://debian.moe/static/files/taiko.png' style="height: 35px; width: 35px" alt="taiko">
+                    {% endif %}
+                    {% if beatmap["Mode"] == 2 %}
+                    <img src='https://debian.moe/static/files/ctb.png' style="height: 35px; width: 35px" alt="ctb">
+                    {% endif %}
+                    {% if beatmap["Mode"] == 3 %}
+                    <img src='https://debian.moe/static/files/mania.png' style="height: 35px; width: 35px" alt="mania">
+                    {% endif %}
+                </div>
+                <input type="hidden" name="mode-{{ beatmap['BmapNumber'] }}" value="{{ beatmap['Mode'] }}">
+                <div style="width: 20px"></div>
+                <div style="width: 20%">
+                    <label>Difficulty</label>
+                    <input type="text" class="form-control" value="{{ beatmap['DiffName'] }}"
+                           name="diff-{{ beatmap['BmapNumber'] }}" readonly="readonly">
+                </div>
+                <div style="width: 20px"></div>
+                <div style="width: 15%">
+                    <label>Beatmap ID</label>
+                    <input type="text" class="form-control" value="{{ beatmap['BeatmapId'] }}"
+                           name='bmapid-{{ beatmap["BmapNumber"] }}' readonly="readonly">
+                </div>
+                <div style="width: 20px"></div>
+                <div style="width: 30%">
+                    <label>Status</label>
+                    <select class="form-control rankSelection" name='rankstatus-{{ beatmap["BmapNumber"] }}'>
+                        {% if beatmap["Ranked"] == 0 %}
+                        <option selected>Unranked</option>
+                        {% else %}
+                        <option>Unranked</option>
+                        {% endif %}
+                        {% if beatmap["Ranked"] == 5 %}
+                        <option selected>Loved</option>
+                        {% else %}
+                        <option>Loved</option>
+                        {% endif %}
+                        {% if beatmap["Ranked"] == 2 %}
+                        <option selected>Ranked</option>
+                        {% else %}
+                        <option>Ranked</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div style="width: 20px"></div>
+                <div style="width: 10%">
+                    <label>pp</label>
+                    <div id="pp-{{ beatmap['BmapNumber'] }}">
+                        <a onclick="CalcPP('{{ beatmap['BmapNumber'] }}', '{{ beatmap['BeatmapId'] }}')"
+                           class="btn btn-primary"
+                           style="color: white;">Calculate</a>
+                    </div>
+                </div>
             </div>
+            <p></p> <!--Seperator-->
+            {% endfor %}
+            <input type="hidden" name="songname" value="{{ beatdata[0]['SongName'] }}">
+            <input type="hidden" name="rankedby" value="{{ session['AccountName'] }}">
+            <div style="height: 50px"></div>
             <div class="article-cta">
                 <button class="btn btn-success" type="submit" name="">Apply!</button>
             </div>
         </form>
     </div>
 </article>
-{% endfor %}
 <script>
     //for playing and stopping bmap music
-    var audio = document.getElementById("BeatmapAudio"); 
-    function Play() { 
-        audio.play(); 
-    } 
+    var audio = document.getElementById("BeatmapAudio");
 
-    function Pause() { 
-        audio.pause(); 
-    } 
+    function Play() {
+        audio.play();
+    }
+
+    function Pause() {
+        audio.pause();
+    }
 
     function CalcPP(BeatmapNr, BeatmapID) {
         //turn it into a loading thing
-        document.getElementById("pp-"+BeatmapNr).innerHTML = '<a onclick="" class="btn btn-primary btn-progress" style="color: white;">Calculate PP</a>'
+        document.getElementById("pp-" + BeatmapNr).innerHTML = '<a onclick="" class="btn btn-primary btn-progress" style="color: white;">Calculate</a>'
         //json getting from url
-        let url = "https://"+ window.location.host +"/js/pp/"+BeatmapID;
+        let url = "https://" + window.location.host + "/js/pp/" + BeatmapID;
 
         fetch(url)
-        .then(res => res.json())
-        .then((out) => {
-        console.log("Got json hopefully ", out);
-        // doing things
-        document.getElementById("pp-"+BeatmapNr).innerHTML = out["pp"] + "pp"
-        })
-        .catch(err => { throw err }); 
+            .then(res => res.json())
+            .then((out) => {
+                console.log("Got json hopefully ", out);
+                // doing things
+                document.getElementById("pp-" + BeatmapNr).innerHTML = "" +
+                    "<a class=\"btn btn-primary\" style=\"color: white;\">" + out["pp"] + "pp" + "</a>"
+            })
+            .catch(err => {
+                throw err
+            });
+    }
+
+    function updateAllSelection(state) {
+        selectionElements = document.getElementsByClassName("rankSelection");
+        for (var i in selectionElements) {
+            selectionElements[i].value = state;
+        }
     }
 </script>
 {% endblock %}
